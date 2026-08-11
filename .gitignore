@@ -1,3 +1,3 @@
 node_modules
-firebase.js
-api.js
+src/firebase.js
+src/youtube/api.js
