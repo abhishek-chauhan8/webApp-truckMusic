@@ -1,5 +1,5 @@
-const API_KEY = "xyz";
-const PLAYLIST_ID = "s1234567";
+const API_KEY = "AIzaSyAsLzM6fSfLkO53y90SrDFOsLK43RdkFu8";
+const PLAYLIST_ID = "PLCd9RzbgNsaA";
 
 export async function fetchPlaylistVideos() {
 
