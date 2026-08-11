@@ -53,18 +53,29 @@ export default function App() {
 
     if (!playlist.length) return;
 
+
     const actualIndex =
       (newIndex + playlist.length) % playlist.length;
 
+
     setIndex(actualIndex);
 
-    load(playlist[actualIndex].youtubeId);
+
+    load(
+      playlist[actualIndex].youtubeId,
+      true
+    );
+
+
+    setTimeout(() => {
+
+      play();
+
+    }, 800);
+
 
     setPlaying(true);
 
-    setTimeout(() => {
-      play();
-    }, 300);
 
   }, [playlist]);
 
@@ -80,11 +91,12 @@ export default function App() {
 
     setIndex(randomIndex);
 
-    load(playlist[randomIndex].youtubeId);
+    load(
+      playlist[randomIndex].youtubeId,
+      true
+    );
 
-    if (playing) {
-      setTimeout(() => play(), 300);
-    }
+    setPlaying(true);
 
   }, [index, playlist, playing]);
 
@@ -99,7 +111,12 @@ export default function App() {
 
     setIndex(previousIndex);
 
-    load(playlist[previousIndex].youtubeId, playing);
+    load(
+      playlist[previousIndex].youtubeId,
+      true
+    );
+
+    setPlaying(true);
 
   }, [index, playlist, playing]);
 
@@ -148,12 +165,24 @@ export default function App() {
 
       if (songs.length > 0) {
 
-        const randomIndex = Math.floor(Math.random() * songs.length);
+        const randomIndex =
+          Math.floor(Math.random() * songs.length);
 
         setIndex(randomIndex);
 
-        load(songs[randomIndex].youtubeId);
-        setPlaying(true);
+        load(
+          songs[randomIndex].youtubeId,
+          true
+        );
+
+        setTimeout(() => {
+
+          play();
+          setPlaying(true);
+
+        }, 1000);
+
+
         onVideoEnd(() => {
 
           nextRef.current();
@@ -198,7 +227,7 @@ export default function App() {
   return <main className="highway-app">
     <div className="highway-background" style={{ backgroundImage: `url(${truckArt})` }} />
     <div className="page-tint" />
-    
+
     <div
       id="youtube-player"
       style={{

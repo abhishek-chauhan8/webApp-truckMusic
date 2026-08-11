@@ -1,40 +1,43 @@
 let player = null;
+let pendingPlay = false;
 
 
 export function createPlayer(elementId) {
 
-    return new Promise((resolve)=>{
+    return new Promise((resolve) => {
 
 
-        if(!window.YT){
-
-            const script=document.createElement("script");
-
-            script.src="https://www.youtube.com/iframe_api";
-
-            document.body.appendChild(script);
-
-        }
+        window.onYouTubeIframeAPIReady = () => {
 
 
-        window.onYouTubeIframeAPIReady = ()=>{
+            player = new window.YT.Player(elementId, {
 
+                width: "1",
+                height: "1",
 
-            player = new window.YT.Player(elementId,{
+                videoId: "",
 
-                width:"1",
-                height:"1",
-
-                videoId:"",
-
-                playerVars:{
-                    controls:0,
-                    rel:0,
-                    playsinline:1
+                playerVars: {
+                    controls: 0,
+                    rel: 0,
+                    playsinline: 1
                 },
 
-                events:{
-                    onReady:()=>resolve(player)
+                events: {
+                    onReady: () => resolve(player),
+
+                    onStateChange: (event) => {
+
+                        if (
+                            event.data === window.YT.PlayerState.CUED &&
+                            pendingPlay
+                        ) {
+
+                            player.playVideo();
+
+                        }
+
+                    }
                 }
 
             });
@@ -43,25 +46,35 @@ export function createPlayer(elementId) {
         };
 
 
+
+        if (!window.YT) {
+
+            const script = document.createElement("script");
+
+            script.src = "https://www.youtube.com/iframe_api";
+
+            document.body.appendChild(script);
+
+        }
+
+
     });
 
 }
 
+export function load(videoId, autoPlay = false) {
 
-export function load(videoId, autoPlay=false){
-
-    if(!player) return;
-
-
-    console.log("Loading:",videoId);
+    if (!player) return;
 
 
-    if(autoPlay){
+    if (autoPlay) {
+
+        pendingPlay = true;
 
         player.loadVideoById(videoId);
 
     }
-    else{
+    else {
 
         player.cueVideoById(videoId);
 
@@ -70,62 +83,62 @@ export function load(videoId, autoPlay=false){
 }
 
 
-export function play(){
+export function play() {
 
-    if(!player) return;
+    if (!player) return;
 
     player.playVideo();
 
 }
 
 
-export function pause(){
+export function pause() {
 
-    if(!player) return;
+    if (!player) return;
 
     player.pauseVideo();
 
 }
 
 
-export function currentTime(){
+export function currentTime() {
 
-    if(!player) return 0;
+    if (!player) return 0;
 
-    return player.getCurrentTime();
-
-}
-
-
-export function duration(){
-
-    if(!player) return 0;
-
-    return player.getDuration();
+    return player.getCurrentTime() || 0;
 
 }
 
 
-export function seek(seconds){
+export function duration() {
 
-    if(!player) return;
+    if (!player) return 0;
 
-    player.seekTo(seconds,true);
+    return player.getDuration() || 0;
 
 }
 
 
-export function onVideoEnd(callback){
+export function seek(seconds) {
 
-    if(!player) return;
+    if (!player) return;
+
+    player.seekTo(seconds, true);
+
+}
+
+
+export function onVideoEnd(callback) {
+
+    if (!player) return;
 
 
     player.addEventListener(
         "onStateChange",
-        (event)=>{
+        (event) => {
 
 
-            if(event.data === window.YT.PlayerState.ENDED){
+            if (event.data === window.YT.PlayerState.ENDED) {
 
                 callback();
 
